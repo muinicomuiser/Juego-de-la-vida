@@ -1,0 +1,11 @@
+{
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "tsc && npx rollup build/main.js --file dist/main.js --format iife",
+    "build": "rm -r build && tsc"
+  },
+  "author": "Nicolás Donoso Negrete",
+  "description": "Juego de la vida de Conway, usando librería mui.js"
+}
