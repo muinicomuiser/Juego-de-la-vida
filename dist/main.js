@@ -1163,128 +1163,188 @@
         }
     }
 
-    const CuadriculaJuego = new Cuadricula(120, 80, 8, 2);
-    const COMPO = new Composicion('canvas');
-    const Render = COMPO.render;
-    // Render.colorCanvas = 'white';
-    CuadriculaJuego.colorCeldas = Renderizado.colorHSL(0, 0, 80);
-    COMPO.tamanoCanvas(CuadriculaJuego.anchoCuadricula, CuadriculaJuego.altoCuadricula);
-    CuadriculaJuego.estadosCero();
-    COMPO.fps = 16;
-    COMPO.animar = false;
-    CuadriculaJuego.rellenarCeldas(Render);
-    // Grabador.grabarCanvas(Render.canvas, 100000, 60, 'descarga');
-    COMPO.animacion(nuevoFrame);
-    const RenderFrecuencia = Renderizado.crearPorIdCanvas('frecuenciaCanvas');
-    RenderFrecuencia.anchoCanvas = 40;
-    RenderFrecuencia.altoCanvas = 30;
+    class JuegoDeLaVida {
+        composicion;
+        cuadricula;
+        render;
+        constructor(composicion, cuadricula) {
+            this.composicion = composicion;
+            this.cuadricula = cuadricula;
+            this.render = this.composicion.render;
+            this.cuadricula.estadosCero();
+        }
+        get animar() {
+            return this.composicion.animar;
+        }
+        get fps() {
+            return this.composicion.fps;
+        }
+        set fps(fps) {
+            this.composicion.fps = fps;
+        }
+        set colorFondo(color) {
+            this.render.colorCanvas = color;
+        }
+        set colorCelulas(color) {
+            this.cuadricula.colorCeldas = color;
+        }
+        set animar(animar) {
+            this.composicion.animar = animar;
+        }
+        static nuevoJuego(idCanvas, opciones) {
+            const composicion = new Composicion(idCanvas);
+            const cuadricula = new Cuadricula(opciones.columnas, opciones.filas, opciones.tamanoCelula, opciones.estadosCelula);
+            composicion.tamanoCanvas(cuadricula.anchoCuadricula, cuadricula.altoCuadricula);
+            return new JuegoDeLaVida(composicion, cuadricula);
+        }
+        rellenarCeldas() {
+            this.cuadricula.rellenarCeldas(this.render);
+        }
+        calcularEstados() {
+            const arregloEstados = [];
+            const celdas = [];
+            this.cuadricula.celdas.forEach((filas) => filas.forEach(celda => {
+                arregloEstados.push(this.cuadricula.estadosVecinosPorCelda(celda));
+                celdas.push(celda);
+            }));
+            for (let i = 0; i < celdas.length; i++) {
+                if (arregloEstados[i][1][1] > 3 || arregloEstados[i][1][1] < 2) {
+                    celdas[i].estado = 0;
+                }
+                else if (celdas[i].estado == 0 && arregloEstados[i][1][1] == 3) {
+                    celdas[i].estado = 1;
+                }
+            }
+        }
+        pintarEstadosSiguiente() {
+            // console.log('hola')
+            this.render.limpiarCanvas();
+            this.calcularEstados();
+            this.rellenarCeldas();
+        }
+        reproducirJuego() {
+            this.composicion.animacion(() => this.pintarEstadosSiguiente());
+        }
+        estadosAleatorios() {
+            this.animar = false;
+            this.render.limpiarCanvas();
+            this.cuadricula.estadosAleatorios();
+            this.rellenarCeldas();
+        }
+        limpiar() {
+            this.animar = false;
+            this.render.limpiarCanvas();
+            this.cuadricula.estadosCero();
+            this.rellenarCeldas();
+        }
+        aumentarFPS() {
+            if (this.fps < 60) {
+                if (this.fps >= 40) {
+                    this.fps += 5;
+                }
+                else if (this.fps >= 12) {
+                    this.fps += 2;
+                }
+                else {
+                    this.fps++;
+                }
+            }
+        }
+        reducirFPS() {
+            if (this.fps > 1) {
+                if (this.fps > 40) {
+                    this.fps -= 5;
+                }
+                else if (this.fps > 12) {
+                    this.fps -= 2;
+                }
+                else {
+                    this.fps--;
+                }
+            }
+        }
+    }
+
+    //INICIO DEL JUEGO
+    const OPCIONESJUEGO = {
+        columnas: 120,
+        filas: 80,
+        tamanoCelula: 8,
+        estadosCelula: 2
+    };
+    const JUEGOVIDA = JuegoDeLaVida.nuevoJuego('canvas', OPCIONESJUEGO);
+    JUEGOVIDA.colorCelulas = Renderizado.colorHSL(0, 0, 90);
+    JUEGOVIDA.fps = 16;
+    JUEGOVIDA.animar = false;
+    JUEGOVIDA.reproducirJuego();
+    //FPS ESCRITOS EN LA INTERFAZ
+    const RenderFPS = Renderizado.crearPorIdCanvas('frecuenciaCanvas');
+    RenderFPS.anchoCanvas = 40;
+    RenderFPS.altoCanvas = 30;
     function escribirFrecuencia() {
-        RenderFrecuencia.limpiarCanvas();
-        RenderFrecuencia.estiloTexto = { tamano: 20, color: 'white', alineacion: 'center' };
-        RenderFrecuencia.escribir(`X${COMPO.fps}`, RenderFrecuencia.centroCanvas.x, RenderFrecuencia.centroCanvas.y + 5);
+        RenderFPS.limpiarCanvas();
+        RenderFPS.estiloTexto = { tamano: 20, color: 'white', alineacion: 'center' };
+        RenderFPS.escribir(`X${JUEGOVIDA.fps}`, RenderFPS.centroCanvas.x, RenderFPS.centroCanvas.y + 5);
     }
     escribirFrecuencia();
-    function nuevoFrame() {
-        Render.limpiarCanvas();
-        juegoVida();
-        CuadriculaJuego.rellenarCeldas(Render);
-    }
-    function juegoVida() {
-        const arregloEstados = [];
-        const celdas = [];
-        CuadriculaJuego.celdas.forEach((filas) => filas.forEach(celda => {
-            arregloEstados.push(CuadriculaJuego.estadosVecinosPorCelda(celda));
-            celdas.push(celda);
-        }));
-        for (let i = 0; i < celdas.length; i++) {
-            if (arregloEstados[i][1][1] > 3 || arregloEstados[i][1][1] < 2) {
-                celdas[i].estado = 0;
-            }
-            else if (celdas[i].estado == 0 && arregloEstados[i][1][1] == 3) {
-                celdas[i].estado = 1;
-            }
+    //EVENTOS TECLADO
+    ManejadorEventos.eventoKeyup('KeyP', () => {
+        JUEGOVIDA.animar = !JUEGOVIDA.animar;
+        if (JUEGOVIDA.animar) {
+            botonReproducir.value = 'Pausar';
         }
-    }
-    //Controles:
-    //P <- Para pausar y reanudar
-    //E <- Para matar todas las células
-    //A <- Estados aleatorios
-    //Espacio <- Para avanzar un frame
-    //Flechas arriba/abajo <- Para aumentar o disminuir los fps
-    //Click <- Para cambiar el estado de una célula
-    ManejadorEventos.eventoKeyup('KeyP', () => { COMPO.animar = !COMPO.animar; });
+        else {
+            botonReproducir.value = 'Reproducir';
+        }
+    });
     ManejadorEventos.eventoKeyup('KeyA', () => {
-        CuadriculaJuego.estadosAleatorios();
-        CuadriculaJuego.rellenarCeldas(Render);
+        JUEGOVIDA.estadosAleatorios();
+        botonReproducir.value = 'Reproducir';
     });
     ManejadorEventos.eventoKeyup('KeyL', () => {
-        COMPO.animar = false;
-        CuadriculaJuego.estadosCero();
-        CuadriculaJuego.rellenarCeldas(Render);
+        JUEGOVIDA.limpiar();
+        botonReproducir.value = 'Reproducir';
     });
     ManejadorEventos.eventoKeyup('Space', () => {
-        nuevoFrame();
+        JUEGOVIDA.pintarEstadosSiguiente();
     });
     ManejadorEventos.eventoKeyup('ArrowDown', () => {
-        if (COMPO.fps > 1) {
-            if (COMPO.fps > 40) {
-                COMPO.fps -= 5;
-            }
-            else if (COMPO.fps > 12) {
-                COMPO.fps -= 2;
-            }
-            else {
-                COMPO.fps--;
-            }
-        }
+        JUEGOVIDA.reducirFPS();
         escribirFrecuencia();
     });
     ManejadorEventos.eventoKeyup('ArrowUp', () => {
-        if (COMPO.fps < 60) {
-            if (COMPO.fps >= 40) {
-                COMPO.fps += 5;
-            }
-            else if (COMPO.fps >= 12) {
-                COMPO.fps += 2;
-            }
-            else {
-                COMPO.fps++;
-            }
-        }
+        JUEGOVIDA.aumentarFPS();
         escribirFrecuencia();
     });
-    ManejadorEventos.eventoMouseEnCanvas('click', Render.canvas, evento => {
-        let mouseX = evento.pageX - Render.canvas.offsetLeft;
-        let mouseY = evento.pageY - Render.canvas.offsetTop;
-        let celda = CuadriculaJuego.celdaEnPosicionMouse(mouseX, mouseY);
+    //EVENTO CLICK EN CANVAS
+    ManejadorEventos.eventoMouseEnCanvas('click', JUEGOVIDA.render.canvas, evento => {
+        let mouseX = evento.pageX - JUEGOVIDA.render.canvas.offsetLeft;
+        let mouseY = evento.pageY - JUEGOVIDA.render.canvas.offsetTop;
+        let celda = JUEGOVIDA.cuadricula.celdaEnPosicionMouse(mouseX, mouseY);
         if (celda.estado == 0) {
             celda.estado = 1;
         }
         else {
             celda.estado = 0;
         }
-        Render.estiloForma.opacidad = celda.estado / (CuadriculaJuego.estados - 1);
-        celda.rellenar(Render);
+        JUEGOVIDA.render.estiloForma.opacidad = celda.estado / (JUEGOVIDA.cuadricula.estados - 1);
+        celda.rellenar(JUEGOVIDA.render);
     });
-    //Botones
+    //EVENTOS BOTONES INTERFAZ
     const botonLimpiar = document.getElementById('limpiar');
     botonLimpiar.addEventListener('click', () => {
-        COMPO.animar = false;
-        CuadriculaJuego.estadosCero();
-        CuadriculaJuego.rellenarCeldas(Render);
+        JUEGOVIDA.limpiar();
         botonReproducir.value = 'Reproducir';
     });
     const botonAleatorio = document.getElementById('aleatorio');
     botonAleatorio.addEventListener('click', () => {
-        COMPO.animar = false;
-        CuadriculaJuego.estadosAleatorios();
-        CuadriculaJuego.rellenarCeldas(Render);
+        JUEGOVIDA.estadosAleatorios();
         botonReproducir.value = 'Reproducir';
     });
     const botonReproducir = document.getElementById('play');
     botonReproducir.addEventListener('click', () => {
-        COMPO.animar = !COMPO.animar;
-        if (COMPO.animar) {
+        JUEGOVIDA.animar = !JUEGOVIDA.animar;
+        if (JUEGOVIDA.animar) {
             botonReproducir.value = 'Pausar';
         }
         else {
@@ -1293,39 +1353,17 @@
     });
     const botonTurno = document.getElementById('turno');
     botonTurno.addEventListener('click', () => {
-        nuevoFrame();
+        JUEGOVIDA.pintarEstadosSiguiente();
     });
     const botonMas = document.getElementById('mas');
     botonMas.addEventListener('click', () => {
-        if (COMPO.fps < 60) {
-            if (COMPO.fps >= 40) {
-                COMPO.fps += 5;
-            }
-            else if (COMPO.fps >= 12) {
-                COMPO.fps += 2;
-            }
-            else {
-                COMPO.fps++;
-            }
-        }
+        JUEGOVIDA.aumentarFPS();
         escribirFrecuencia();
-        console.log(COMPO.fps);
     });
     const botonMenos = document.getElementById('menos');
     botonMenos.addEventListener('click', () => {
-        if (COMPO.fps > 1) {
-            if (COMPO.fps > 40) {
-                COMPO.fps -= 5;
-            }
-            else if (COMPO.fps > 12) {
-                COMPO.fps -= 2;
-            }
-            else {
-                COMPO.fps--;
-            }
-        }
+        JUEGOVIDA.reducirFPS();
         escribirFrecuencia();
-        console.log(COMPO.fps);
     });
 
 })();
