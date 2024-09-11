@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang='es'>
 
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,37 @@
 </head>
 
 <body>
-    <canvas id="canvas"></canvas>
+    <header>
+
+    </header>
+    <main>
+        <section>
+            <canvas id="canvas"></canvas>
+        </section>
+
+        <section>
+            <ul id="interfaz">
+                <li>
+                    <input type="button" id="limpiar" class="boton" value="Limpiar">
+                </li>
+                <li>
+                    <input type="button" id="aleatorio" class="boton" value="Aleatorio">
+                </li>
+                <li>
+                    <input type="button" id="play" class="boton" value="Reproducir">
+                </li>
+                <li>
+                    <button id="turno" class="boton">Turno siguiente</button>
+                </li>
+                <li>
+                    <button id="menos" class="velocidad">-</button>
+                </li>
+                <li>
+                    <button id="mas" class="velocidad">+</button>
+                </li>
+            </ul>
+        </section>
+    </main>
 </body>
 <script src="dist/main.js"></script>
 

@@ -1,6 +1,6 @@
 import { Celda, Composicion, Cuadricula, Grabador, ManejadorEventos, Renderizado, Tiempo, Vector } from "./MUIJS/mui.js";
 
-const CuadriculaJuego: Cuadricula = new Cuadricula(100, 50, 10, 2);
+const CuadriculaJuego: Cuadricula = new Cuadricula(100, 60, 10, 2);
 const COMPO: Composicion = new Composicion('canvas');
 const Render: Renderizado = COMPO.render;
 Render.colorCanvas = 'black';
@@ -59,7 +59,8 @@ ManejadorEventos.eventoKeyup('KeyA', () => {
     CuadriculaJuego.rellenarCeldas(Render)
 
 });
-ManejadorEventos.eventoKeyup('KeyE', () => {
+ManejadorEventos.eventoKeyup('KeyL', () => {
+    COMPO.animar = false;
     CuadriculaJuego.estadosCero()
     CuadriculaJuego.rellenarCeldas(Render)
 });
@@ -67,7 +68,7 @@ ManejadorEventos.eventoKeyup('Space', () => {
     nuevoFrame()
 });
 ManejadorEventos.eventoKeyup('ArrowDown', () => {
-    if (COMPO.fps >= 1) {
+    if (COMPO.fps > 1) {
         if (COMPO.fps > 40) {
             COMPO.fps -= 5;
         }
@@ -107,3 +108,65 @@ ManejadorEventos.eventoMouseEnCanvas('click', Render.canvas, evento => {
     Render.estiloForma.opacidad = celda.estado / (CuadriculaJuego.estados - 1)
     celda.rellenar(Render)
 });
+
+//Botones
+
+const botonLimpiar: HTMLInputElement = <HTMLInputElement>document.getElementById('limpiar')
+botonLimpiar.addEventListener('click', () => {
+    COMPO.animar = false;
+    CuadriculaJuego.estadosCero()
+    CuadriculaJuego.rellenarCeldas(Render)
+    botonReproducir.value = 'Reproducir'
+})
+const botonAleatorio: HTMLInputElement = <HTMLInputElement>document.getElementById('aleatorio')
+botonAleatorio.addEventListener('click', () => {
+    COMPO.animar = false;
+    CuadriculaJuego.estadosAleatorios()
+    CuadriculaJuego.rellenarCeldas(Render)
+    botonReproducir.value = 'Reproducir'
+})
+const botonReproducir: HTMLInputElement = <HTMLInputElement>document.getElementById('play')
+botonReproducir.addEventListener('click', () => {
+    COMPO.animar = !COMPO.animar;
+    if (COMPO.animar) {
+        botonReproducir.value = 'Pausar'
+    }
+    else {
+        botonReproducir.value = 'Reproducir'
+    }
+})
+const botonTurno: HTMLButtonElement = <HTMLButtonElement>document.getElementById('turno')
+botonTurno.addEventListener('click', () => {
+    nuevoFrame()
+})
+const botonMas: HTMLButtonElement = <HTMLButtonElement>document.getElementById('mas')
+botonMas.addEventListener('click', () => {
+    if (COMPO.fps < 60) {
+        if (COMPO.fps >= 40) {
+            COMPO.fps += 5;
+        }
+        else if (COMPO.fps >= 12) {
+            COMPO.fps += 2
+        }
+        else {
+            COMPO.fps++
+        }
+    }
+    console.log(COMPO.fps)
+})
+const botonMenos: HTMLButtonElement = <HTMLButtonElement>document.getElementById('menos')
+botonMenos.addEventListener('click', () => {
+    if (COMPO.fps > 1) {
+        if (COMPO.fps > 40) {
+            COMPO.fps -= 5;
+        }
+        else if (COMPO.fps > 12) {
+            COMPO.fps -= 2
+        }
+        else {
+            COMPO.fps--
+        }
+    }
+    console.log(COMPO.fps)
+})
+
