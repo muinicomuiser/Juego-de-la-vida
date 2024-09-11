@@ -10,18 +10,23 @@ body {
     justify-content: center;
     padding: 2rem;
     background-color: black;
+    /* background-color: white; */
 }
 
-canvas {
-    border: 2px solid hsl(200, 0%, 50%)
+#canvas {
+    margin: auto;
+    display: block;
+    border: 2px solid hsl(200, 0%, 50%);
+
 }
 
 ul {
+    padding: 1rem;
     display: flex;
     flex-direction: row;
     justify-content: center;
     list-style: none;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .boton {

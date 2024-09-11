@@ -1,14 +1,13 @@
-import { Celda, Composicion, Cuadricula, Grabador, ManejadorEventos, Renderizado, Tiempo, Vector } from "./MUIJS/mui.js";
+import { Celda, Composicion, Cuadricula, Grabador, ManejadorEventos, Renderizado } from "./MUIJS/mui.js";
 
-const CuadriculaJuego: Cuadricula = new Cuadricula(100, 60, 10, 2);
+const CuadriculaJuego: Cuadricula = new Cuadricula(120, 80, 8, 2);
 const COMPO: Composicion = new Composicion('canvas');
 const Render: Renderizado = COMPO.render;
-Render.colorCanvas = 'black';
-CuadriculaJuego.colorCeldas = 'white';
+// Render.colorCanvas = 'white';
+CuadriculaJuego.colorCeldas = Renderizado.colorHSL(0, 0, 80);
 COMPO.tamanoCanvas(CuadriculaJuego.anchoCuadricula, CuadriculaJuego.altoCuadricula)
 
 CuadriculaJuego.estadosCero();
-// CuadriculaJuego.estadosAleatorios();
 
 COMPO.fps = 16;
 COMPO.animar = false;
@@ -17,14 +16,22 @@ CuadriculaJuego.rellenarCeldas(Render);
 // Grabador.grabarCanvas(Render.canvas, 100000, 60, 'descarga');
 COMPO.animacion(nuevoFrame);
 
+const RenderFrecuencia: Renderizado = Renderizado.crearPorIdCanvas('frecuenciaCanvas')
+RenderFrecuencia.anchoCanvas = 40
+RenderFrecuencia.altoCanvas = 30
+function escribirFrecuencia() {
+    RenderFrecuencia.limpiarCanvas()
+    RenderFrecuencia.estiloTexto = { tamano: 20, color: 'white', alineacion: 'center' }
+    RenderFrecuencia.escribir(`X${COMPO.fps}`, RenderFrecuencia.centroCanvas.x, RenderFrecuencia.centroCanvas.y + 5)
+}
+
+escribirFrecuencia()
 function nuevoFrame() {
     Render.limpiarCanvas();
     juegoVida();
     CuadriculaJuego.rellenarCeldas(Render);
 };
 
-//Solo falta cambiar el modo de pintar la celda.
-//Que su color no se asigne según opacidad por estado, sino luminosidad por estado
 function juegoVida(): void {
     const arregloEstados: [number, number][][] = []
     const celdas: Celda[] = []
@@ -79,7 +86,7 @@ ManejadorEventos.eventoKeyup('ArrowDown', () => {
             COMPO.fps--
         }
     }
-    console.log(COMPO.fps)
+    escribirFrecuencia()
 });
 ManejadorEventos.eventoKeyup('ArrowUp', () => {
     if (COMPO.fps < 60) {
@@ -93,7 +100,7 @@ ManejadorEventos.eventoKeyup('ArrowUp', () => {
             COMPO.fps++
         }
     }
-    console.log(COMPO.fps)
+    escribirFrecuencia()
 });
 ManejadorEventos.eventoMouseEnCanvas('click', Render.canvas, evento => {
     let mouseX: number = evento.pageX - Render.canvas.offsetLeft;
@@ -152,6 +159,7 @@ botonMas.addEventListener('click', () => {
             COMPO.fps++
         }
     }
+    escribirFrecuencia()
     console.log(COMPO.fps)
 })
 const botonMenos: HTMLButtonElement = <HTMLButtonElement>document.getElementById('menos')
@@ -167,6 +175,6 @@ botonMenos.addEventListener('click', () => {
             COMPO.fps--
         }
     }
+    escribirFrecuencia()
     console.log(COMPO.fps)
 })
-
