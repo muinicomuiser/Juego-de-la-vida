@@ -2,5 +2,6 @@ export type OpcionesJuegoVida = {
     columnas: number,
     filas: number,
     tamanoCelula: number,
-    estadosCelula: number
+    estadosCelula: number,
+    bordesInfinitos: boolean,
 }

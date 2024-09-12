@@ -8,7 +8,8 @@ const OPCIONESJUEGO: OpcionesJuegoVida = {
     columnas: 140,
     filas: 70,
     tamanoCelula: 8,
-    estadosCelula: 2
+    estadosCelula: 2,
+    bordesInfinitos: true,
 }
 
 const JUEGOVIDA: JuegoDeLaVida = JuegoDeLaVida.nuevoJuego('canvas', OPCIONESJUEGO)
@@ -29,7 +30,7 @@ function escribirFrecuencia() {
     RenderFPS.escribir(`X${JUEGOVIDA.fps}`, RenderFPS.centroCanvas.x, RenderFPS.centroCanvas.y + 10)
 }
 escribirFrecuencia()
-
+console.log(JUEGOVIDA.cuadricula)
 //EVENTOS TECLADO
 
 ManejadorEventos.anularAccionPorDefecto('espacio')

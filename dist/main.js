@@ -1085,17 +1085,6 @@
         get vecindad() {
             return Vector.crear(-this.distanciaVecindad, this.distanciaVecindad);
         }
-        determinarVecinos(numColumnas, numFilas) {
-            const posicionesVecinos = [];
-            for (let col = -this.distanciaVecindad; col <= this.distanciaVecindad; col++) {
-                for (let fil = -this.distanciaVecindad; fil <= this.distanciaVecindad; fil++) {
-                    if (fil + this.y > 0 && fil + this.y <= numFilas && col + this.x > 0 && col + this.x <= numColumnas && !(col == 0 && fil == 0)) {
-                        posicionesVecinos.push(Vector.crear(this.x + col, this.y + fil));
-                    }
-                }
-            }
-            this.posicionVecinos = posicionesVecinos;
-        }
         rellenar(dibujante) {
             dibujante.rellenarCelda(this);
         }
@@ -1113,6 +1102,7 @@
         columnas;
         /**La dimensión del lado de una celda cuadrada.*/
         tamanoCelda;
+        _bordesInfinitos = false;
         celdas = [];
         /**El número de estados posibles que puede adoptar cada celda.*/
         estados;
@@ -1132,6 +1122,10 @@
         get altoCuadricula() {
             return this.filas * this.tamanoCelda;
         }
+        set bordesInfinitos(borderInfinitos) {
+            this._bordesInfinitos = borderInfinitos;
+            this.celdas = this.crearCeldas();
+        }
         /**Ajusta el color con que se pintarán las celdas.*/
         set colorCeldas(color) {
             if (this._colorCeldas != color) {
@@ -1146,11 +1140,37 @@
                 for (let fila = 1; fila <= this.filas; fila++) {
                     let celda = new Celda(columna, fila, this.tamanoCelda);
                     celda.color = this._colorCeldas;
-                    celda.determinarVecinos(this.columnas, this.filas);
+                    celda.posicionVecinos = this.determinarVecinosPorCelda(celda);
+                    // celda.determinarVecinos(this.columnas, this.filas)
                     celdasNuevas[columna - 1].push(celda);
                 }
             }
             return celdasNuevas;
+        }
+        /**Retorna un arreglo con las posiciones de los vecinos de la celda ingresada.
+         * Permite definir si las celdas de los bordes incluirán o a las celdas de los bordes opuestos de la cuadrícula entre sus vecinos.
+         */
+        determinarVecinosPorCelda(celda) {
+            const posicionesVecinos = [];
+            for (let col = -celda.distanciaVecindad; col <= celda.distanciaVecindad; col++) {
+                for (let fil = -celda.distanciaVecindad; fil <= celda.distanciaVecindad; fil++) {
+                    if (!(col == 0 && fil == 0)) {
+                        if (this._bordesInfinitos) {
+                            let vecinoX = (celda.x + col) <= this.columnas ? celda.x + col : celda.x + col - this.columnas;
+                            vecinoX = vecinoX > 0 ? vecinoX : vecinoX + this.columnas;
+                            let vecinoY = (celda.y + fil) <= this.filas ? celda.y + fil : celda.y + fil - this.filas;
+                            vecinoY = vecinoY > 0 ? vecinoY : vecinoY + this.filas;
+                            posicionesVecinos.push(Vector.crear(vecinoX, vecinoY));
+                        }
+                        else {
+                            if (fil + celda.y > 0 && fil + celda.y <= this.filas && col + celda.x > 0 && col + celda.x <= this.columnas) {
+                                posicionesVecinos.push(Vector.crear(celda.x + col, celda.y + fil));
+                            }
+                        }
+                    }
+                }
+            }
+            return posicionesVecinos;
         }
         /**Retorna un arreglo de tuplas con el número de vecinos de la celda que están en cada estado posible.
          * [[estado, número de vecinos en ese estado], [estado, número de vecinos en ese estado]...]
@@ -1198,7 +1218,7 @@
         estadosCero() {
             this.celdas.forEach((celdas) => celdas.forEach((celda) => celda.estado = 0));
         }
-        /**Asigna un estado aleatorio a cada celda de la cuadrícula.*/
+        /**Asigna el estado máximo a cada celda de la cuadrícula.*/
         estadosMaximos() {
             if (this.estados == 1) {
                 this.celdas.forEach((celdas) => celdas.forEach((celda) => celda.estado = 1));
@@ -1241,6 +1261,7 @@
             const composicion = new Composicion(idCanvas);
             const cuadricula = new Cuadricula(opciones.columnas, opciones.filas, opciones.tamanoCelula, opciones.estadosCelula);
             composicion.tamanoCanvas(cuadricula.anchoCuadricula, cuadricula.altoCuadricula);
+            cuadricula.bordesInfinitos = opciones.bordesInfinitos;
             return new JuegoDeLaVida(composicion, cuadricula);
         }
         rellenarCeldas() {
@@ -1316,7 +1337,8 @@
         columnas: 140,
         filas: 70,
         tamanoCelula: 8,
-        estadosCelula: 2
+        estadosCelula: 2,
+        bordesInfinitos: true,
     };
     const JUEGOVIDA = JuegoDeLaVida.nuevoJuego('canvas', OPCIONESJUEGO);
     JUEGOVIDA.colorCelulas = Renderizado.colorHSL(0, 0, 90);
@@ -1333,6 +1355,7 @@
         RenderFPS.escribir(`X${JUEGOVIDA.fps}`, RenderFPS.centroCanvas.x, RenderFPS.centroCanvas.y + 10);
     }
     escribirFrecuencia();
+    console.log(JUEGOVIDA.cuadricula);
     //EVENTOS TECLADO
     ManejadorEventos.anularAccionPorDefecto('espacio');
     ManejadorEventos.eventoKeyup('p', () => {

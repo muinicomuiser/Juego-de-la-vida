@@ -41,6 +41,7 @@ export class JuegoDeLaVida {
         const composicion: Composicion = new Composicion(idCanvas);
         const cuadricula: Cuadricula = new Cuadricula(opciones.columnas, opciones.filas, opciones.tamanoCelula, opciones.estadosCelula);
         composicion.tamanoCanvas(cuadricula.anchoCuadricula, cuadricula.altoCuadricula);
+        cuadricula.bordesInfinitos = opciones.bordesInfinitos;
         return new JuegoDeLaVida(composicion, cuadricula);
     }
 
