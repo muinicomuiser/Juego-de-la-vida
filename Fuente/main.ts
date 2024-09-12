@@ -5,8 +5,8 @@ import { OpcionesJuegoVida } from "./OpcionesJuegoVida.js";
 //INICIO DEL JUEGO
 
 const OPCIONESJUEGO: OpcionesJuegoVida = {
-    columnas: 120,
-    filas: 80,
+    columnas: 140,
+    filas: 70,
     tamanoCelula: 8,
     estadosCelula: 2
 }
@@ -21,12 +21,12 @@ JUEGOVIDA.reproducirJuego();
 //FPS ESCRITOS EN LA INTERFAZ
 
 const RenderFPS: Renderizado = Renderizado.crearPorIdCanvas('frecuenciaCanvas')
-RenderFPS.anchoCanvas = 40
+RenderFPS.anchoCanvas = 50
 RenderFPS.altoCanvas = 30
 function escribirFrecuencia() {
     RenderFPS.limpiarCanvas()
     RenderFPS.estiloTexto = { tamano: 20, color: 'white', alineacion: 'center' }
-    RenderFPS.escribir(`X${JUEGOVIDA.fps}`, RenderFPS.centroCanvas.x, RenderFPS.centroCanvas.y + 5)
+    RenderFPS.escribir(`X${JUEGOVIDA.fps}`, RenderFPS.centroCanvas.x, RenderFPS.centroCanvas.y + 10)
 }
 escribirFrecuencia()
 
