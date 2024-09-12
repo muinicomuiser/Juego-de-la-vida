@@ -969,24 +969,24 @@
     //Tengo que integrar un modo de recibir eventos de hardware
     class ManejadorEventos {
         /**Agrega un eventListener para eventos de teclado. Recibe una función callback y opcionalmente un parámetro si la función lo requiere.*/
-        static eventoTeclado(tipoEvento, codigoTecla, manejarEvento, parametro) {
+        static eventoTeclado(tipoEvento, tecla, manejarEvento, parametro) {
             document.addEventListener(tipoEvento, (evento) => {
-                if (evento.code == codigoTecla) {
+                if (evento.key == CODIGOSTECLA[tecla]) {
                     manejarEvento(parametro);
                 }
             });
         }
         /**Agrega un eventListener para eventos de teclado tipo keyup. Recibe una función callback y opcionalmente un parámetro si la función lo requiere.*/
-        static eventoKeyup(codigoTecla, manejarEvento, parametro) {
-            ManejadorEventos.eventoTeclado('keyup', codigoTecla, manejarEvento, parametro);
+        static eventoKeyup(tecla, manejarEvento, parametro) {
+            ManejadorEventos.eventoTeclado('keyup', tecla, manejarEvento, parametro);
         }
         /**Agrega un eventListener para eventos de teclado tipo keydown. Recibe una función callback y opcionalmente un parámetro si la función lo requiere.*/
-        static eventoKeydown(codigoTecla, manejarEvento, parametro) {
-            ManejadorEventos.eventoTeclado('keydown', codigoTecla, manejarEvento, parametro);
+        static eventoKeydown(tecla, manejarEvento, parametro) {
+            ManejadorEventos.eventoTeclado('keydown', tecla, manejarEvento, parametro);
         }
         /**Agrega un eventListener para eventos de teclado tipo keypress. Recibe una función callback y opcionalmente un parámetro si la función lo requiere.*/
-        static eventoKeypress(codigoTecla, manejarEvento, parametro) {
-            ManejadorEventos.eventoTeclado('keypress', codigoTecla, manejarEvento, parametro);
+        static eventoKeypress(tecla, manejarEvento, parametro) {
+            ManejadorEventos.eventoTeclado('keypress', tecla, manejarEvento, parametro);
         }
         /**Agrega un eventListener para eventos de mouse y para trabajar con las propiedades del evento.
          * Recibe una función callback y opcionalmente un parámetro si la función lo requiere.*/
@@ -1012,7 +1012,53 @@
                 }
             });
         }
+        /**Previene que se activen acciones por defecto al presionar la tecla definida. */
+        static anularAccionPorDefecto(tecla) {
+            document.addEventListener('keydown', (event) => {
+                if (event.key == CODIGOSTECLA[tecla]) {
+                    event.preventDefault();
+                }
+            });
+        }
     }
+    /**Constante que almacena los códigos de eventos de teclado.*/
+    const CODIGOSTECLA = {
+        espacio: " ",
+        enter: 'Enter',
+        arriba: 'ArrowUp',
+        abajo: 'ArrowDown',
+        izquierda: 'ArrowLeft',
+        derecha: 'ArrowRight',
+        a: 'a',
+        b: 'b',
+        c: 'c',
+        d: 'd',
+        e: 'e',
+        f: 'f',
+        g: 'g',
+        h: 'h',
+        i: 'i',
+        j: 'j',
+        k: 'k',
+        l: 'l',
+        m: 'm',
+        n: 'n',
+        ñ: 'ñ',
+        o: 'o',
+        p: 'p',
+        q: 'q',
+        r: 'r',
+        s: 's',
+        t: 't',
+        u: 'u',
+        v: 'v',
+        w: 'w',
+        x: 'x',
+        y: 'y',
+        z: 'z',
+        mas: '+',
+        menos: '-',
+    };
 
     class Celda {
         posicion;
@@ -1288,7 +1334,8 @@
     }
     escribirFrecuencia();
     //EVENTOS TECLADO
-    ManejadorEventos.eventoKeyup('KeyP', () => {
+    ManejadorEventos.anularAccionPorDefecto('espacio');
+    ManejadorEventos.eventoKeyup('p', () => {
         JUEGOVIDA.animar = !JUEGOVIDA.animar;
         if (JUEGOVIDA.animar) {
             botonReproducir.value = 'Pausar';
@@ -1297,29 +1344,29 @@
             botonReproducir.value = 'Reproducir';
         }
     });
-    ManejadorEventos.eventoKeyup('KeyA', () => {
+    ManejadorEventos.eventoKeyup('a', () => {
         JUEGOVIDA.estadosAleatorios();
         botonReproducir.value = 'Reproducir';
     });
-    ManejadorEventos.eventoKeyup('KeyL', () => {
+    ManejadorEventos.eventoKeyup('l', () => {
         JUEGOVIDA.limpiar();
         botonReproducir.value = 'Reproducir';
     });
-    ManejadorEventos.eventoKeyup('Space', () => {
+    ManejadorEventos.eventoKeyup('espacio', (evento) => {
         JUEGOVIDA.pintarEstadosSiguiente();
     });
-    ManejadorEventos.eventoKeyup('ArrowDown', () => {
+    ManejadorEventos.eventoKeyup('menos', () => {
         JUEGOVIDA.reducirFPS();
         escribirFrecuencia();
     });
-    ManejadorEventos.eventoKeyup('ArrowUp', () => {
+    ManejadorEventos.eventoKeyup('mas', () => {
         JUEGOVIDA.aumentarFPS();
         escribirFrecuencia();
     });
     //EVENTO CLICK EN CANVAS
     ManejadorEventos.eventoMouseEnCanvas('click', JUEGOVIDA.render.canvas, evento => {
-        let mouseX = evento.pageX - JUEGOVIDA.render.canvas.offsetLeft;
-        let mouseY = evento.pageY - JUEGOVIDA.render.canvas.offsetTop;
+        let mouseX = evento.offsetX;
+        let mouseY = evento.offsetY;
         let celda = JUEGOVIDA.cuadricula.celdaEnPosicionMouse(mouseX, mouseY);
         if (celda.estado == 0) {
             celda.estado = 1;

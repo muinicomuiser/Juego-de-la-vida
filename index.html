@@ -10,10 +10,10 @@
 
 <body>
     <header>
-
+        <h1>Juego de la Vida</h1>
     </header>
     <main>
-        <section>
+        <section id="seccionCanvas">
             <canvas id="canvas"></canvas>
         </section>
 
@@ -41,6 +41,40 @@
                     <canvas id="frecuenciaCanvas"></canvas>
                 </li>
             </ul>
+        </section>
+        <section id="descripcion">
+            <h2>Descripción</h2>
+            <p>
+                Juego sin jugadores.
+            </p>
+            <p>
+                Consta de una grilla con casillas que pueden ser ocupadas por una célula.
+            </p>
+            <p>
+                La aparición o muerte de una célula en una casilla depende de la cantidad de células que haya alrededor.
+            </p>
+            <p>
+                En cada turno nuevo se revisa la cantidad de vecinos de cada casilla para determinar su estado
+                siguiente.
+            </p>
+            <p>
+                Las reglas que definen si una célula nace, se mantiene viva o muere son las siguientes:
+            </p>
+            <p>
+                Una célula nace si tiene exactamente tres células vecinas vivas (es decir, al turno siguiente estará
+                viva).
+            </p>
+            <p>
+                Una célula puede morir por dos causas:
+            </p>
+            <ul id="reglas">
+                <li>Sobrepoblación: si tiene más de tres vecinos alrededor.</li>
+                <li>Aislamiento: si tiene solo un vecino alrededor o ninguno.</li>
+            </ul>
+            <p>
+                Una célula se mantiene viva si tiene dos o tres vecinos a su alrededor.
+            </p>
+
         </section>
     </main>
 </body>

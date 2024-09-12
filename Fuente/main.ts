@@ -32,7 +32,9 @@ escribirFrecuencia()
 
 //EVENTOS TECLADO
 
-ManejadorEventos.eventoKeyup('KeyP', () => {
+ManejadorEventos.anularAccionPorDefecto('espacio')
+
+ManejadorEventos.eventoKeyup('p', () => {
     JUEGOVIDA.animar = !JUEGOVIDA.animar;
     if (JUEGOVIDA.animar) {
         botonReproducir.value = 'Pausar'
@@ -41,23 +43,25 @@ ManejadorEventos.eventoKeyup('KeyP', () => {
         botonReproducir.value = 'Reproducir'
     }
 });
-ManejadorEventos.eventoKeyup('KeyA', () => {
+ManejadorEventos.eventoKeyup('a', () => {
     JUEGOVIDA.estadosAleatorios();
     botonReproducir.value = 'Reproducir'
 
 });
-ManejadorEventos.eventoKeyup('KeyL', () => {
+ManejadorEventos.eventoKeyup('l', () => {
     JUEGOVIDA.limpiar();
     botonReproducir.value = 'Reproducir'
 });
-ManejadorEventos.eventoKeyup('Space', () => {
+
+
+ManejadorEventos.eventoKeyup('espacio', (evento) => {
     JUEGOVIDA.pintarEstadosSiguiente()
 });
-ManejadorEventos.eventoKeyup('ArrowDown', () => {
+ManejadorEventos.eventoKeyup('menos', () => {
     JUEGOVIDA.reducirFPS()
     escribirFrecuencia()
 });
-ManejadorEventos.eventoKeyup('ArrowUp', () => {
+ManejadorEventos.eventoKeyup('mas', () => {
     JUEGOVIDA.aumentarFPS()
     escribirFrecuencia()
 });
@@ -66,8 +70,8 @@ ManejadorEventos.eventoKeyup('ArrowUp', () => {
 //EVENTO CLICK EN CANVAS
 
 ManejadorEventos.eventoMouseEnCanvas('click', JUEGOVIDA.render.canvas, evento => {
-    let mouseX: number = evento.pageX - JUEGOVIDA.render.canvas.offsetLeft;
-    let mouseY: number = evento.pageY - JUEGOVIDA.render.canvas.offsetTop;
+    let mouseX: number = evento.offsetX;
+    let mouseY: number = evento.offsetY;
     let celda: Celda = JUEGOVIDA.cuadricula.celdaEnPosicionMouse(mouseX, mouseY);
     if (celda.estado == 0) {
         celda.estado = 1
