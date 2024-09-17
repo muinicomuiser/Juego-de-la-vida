@@ -27,6 +27,7 @@ Una célula se mantiene viva si tiene dos o tres vecinos a su alrededor.
 
 ## Otros proyectos creados con mui.js
 - <a href="https://muinicomuiser.github.io/boids" target="_blank">boids</a>
+- <a href="https://muinicomuiser.github.io/Vida-y-particulas/" target="_blank">Vida y partículas</a>
 - <a href="https://muinicomuiser.github.io/mui-js/" target="_blank">Figuras geométricas y colisiones</a>
 
  
