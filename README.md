@@ -6,7 +6,7 @@
 
 ## Descripción
 Una versión del "Game of Life" de John Horton Conway.    
-Programado por Nicolás Donoso usando <a href='https://github.com/muinicomuiser/mui-js'>mui.js</a>  
+Programado por Nicolás Donoso usando <a href='https://github.com/muinicomuiser/muijs-cuerpos'>muijs-cuerpos</a>  
 
 Proyecto de estudio       
 En proceso      
