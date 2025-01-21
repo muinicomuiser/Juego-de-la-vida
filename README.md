@@ -8,10 +8,11 @@
 Una versión del "Game of Life" de John Horton Conway.    
 Programado por Nicolás Donoso usando <a href='https://github.com/muinicomuiser/muijs-cuerpos'>muijs-cuerpos</a>  
 
+
 Proyecto de estudio       
 En proceso      
 
-## Juego de la vida
+## [Juego de la vida](https://muinicomuiser.github.io/Juego-de-la-vida/)
 Juego sin jugadores.      
 Consta de una grilla con casillas que pueden ser ocupadas por una célula.     
 La aparición o muerte de una célula en una casilla depende de la cantidad de células que haya alrededor.      
